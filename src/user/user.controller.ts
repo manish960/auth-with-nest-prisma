@@ -8,6 +8,7 @@ import {
   Delete,
   Put,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,7 +17,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('User')
-@ApiBearerAuth()
+@ApiBearerAuth('access-token')
 @UseGuards(JwtAuthGuard)
 @Controller('user')
 export class UserController {
@@ -27,10 +28,14 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-
   @Get()
   findAll() {
     return this.userService.findAll();
+  }
+
+  @Get('/me')
+  getLoggedInUser(@Req() req) {
+    return req.user; // 👈 logged in user
   }
 
   @Get(':id')

@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { RegisterDto } from './dto/register.dto';
@@ -10,6 +15,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(forwardRef(() => UserService))
     private user: UserService,
     private jwt: JwtService,
     private prisma: PrismaService,
@@ -24,7 +30,7 @@ export class AuthService {
       password: hashed,
     });
 
-    return this.signToken(user.id, user.email);
+    return this.signToken(user.id, user.email, user.role);
   }
 
   async login(dto: LoginDto) {
@@ -32,16 +38,18 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
-    if (!user) throw new ForbiddenException('Invalid credentials');
 
+    if (!user) throw new ForbiddenException('Invalid credentials');
+    
     const match = await bcrypt.compare(dto.password, user.password);
+    console.log(user,'iiiiiiiiiiiiiiiiiiii',match)
     if (!match) throw new ForbiddenException('Invalid credentials');
 
-    return this.signToken(user.id, user.email);
+    return this.signToken(user.id, user.email, user.role);
   }
 
-  signToken(id: number, email: string) {
-    const payload = { sub: id, email };
+  signToken(id: number, email: string, role: string) {
+    const payload = { sub: id, email, role };
 
     const token = this.jwt.sign(payload, { expiresIn: '1h' });
     return { access_token: token };

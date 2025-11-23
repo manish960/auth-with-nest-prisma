@@ -14,17 +14,25 @@ async function bootstrap() {
     .setDescription('The Crm Managment API description')
     .setVersion('1.0')
     // .addTag('cats')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token',
+    )
+    .addSecurityRequirements('access-token')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
-    app.useGlobalPipes(
+  app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,          // remove unknown fields
+      whitelist: true, // remove unknown fields
       forbidNonWhitelisted: true,
-      transform: true,          // auto-transform types
-      stopAtFirstError: false,  // show all errors at once
+      transform: true, // auto-transform types
+      stopAtFirstError: false, // show all errors at once
     }),
   );
 
