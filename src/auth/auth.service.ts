@@ -15,7 +15,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(forwardRef(() => UserService))
     private user: UserService,
     private jwt: JwtService,
     private prisma: PrismaService,
@@ -39,6 +38,7 @@ export class AuthService {
       where: { email: dto.email },
     });
 
+
     if (!user) throw new ForbiddenException('Invalid credentials');
     
     const match = await bcrypt.compare(dto.password, user.password);
@@ -49,7 +49,7 @@ export class AuthService {
   }
 
   signToken(id: number, email: string, role: string) {
-    const payload = { sub: id, email, role };
+    const payload = { id, email, role };
 
     const token = this.jwt.sign(payload, { expiresIn: '1h' });
     return { access_token: token };
