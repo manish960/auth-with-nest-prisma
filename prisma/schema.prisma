@@ -23,3 +23,21 @@ enum Role {
   STAFF
   USER
 }
+
+
+model Patient {
+  id          Int       @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String?   @unique
+  phone       String?
+  dateOfBirth DateTime?
+  gender      String?   // or use enum later
+  address     String?
+
+  createdAt   DateTime  @default(now())
+
+  // Relations
+  // appointments Appointment[]
+  // invoices     Invoice[]
+}
