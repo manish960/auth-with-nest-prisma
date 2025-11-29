@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -20,7 +20,11 @@ export class PatientService {
   }
 
   async findOne(id: number) {
-    return await this.prisma.patient.findUnique({ where: { id } });
+    const patient = await this.prisma.patient.findUnique({ where: { id } });
+
+    if (!patient)
+      throw new BadRequestException(`Record Doest Not Exist With : ${id}`);
+    return patient;
   }
 
   async update(id: number, updatePatientDto: UpdatePatientDto) {

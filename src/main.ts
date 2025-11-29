@@ -5,6 +5,7 @@ import { PrismaExceptionFilter } from './prisma/prisma-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -36,10 +37,13 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalFilters(new PrismaExceptionFilter());
 
-  // Global Error Handler
-  app.useGlobalFilters(new GlobalExceptionFilter());
+  app.useGlobalFilters(
+    new AllExceptionsFilter(),     // 3. Runtime errors
+    new PrismaExceptionFilter(),   // 1. DB errors
+    new GlobalExceptionFilter(),   // 2. HttpExceptions
+  );
+
 
   // Global Success Response Formatter
   app.useGlobalInterceptors(new ResponseInterceptor());

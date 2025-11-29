@@ -8,9 +8,10 @@ import { AuthModule } from './auth/auth.module';
 import { PatientModule } from './patient/patient.module';
 import { DoctorProfileModule } from './doctor-profile/doctor-profile.module';
 import { StaffProfileModule } from './staff-profile/staff-profile.module';
+import { AppointmentsModule } from './appointments/appointments.module';
 
 @Module({
-  imports: [UserModule, PrismaModule, ConfigModule.forRoot({ isGlobal: true }), AuthModule, PatientModule, DoctorProfileModule, StaffProfileModule],
+  imports: [UserModule, PrismaModule, ConfigModule.forRoot({ isGlobal: true }), AuthModule, PatientModule, DoctorProfileModule, StaffProfileModule, AppointmentsModule],
   controllers: [AppController],
   providers: [AppService],
 })

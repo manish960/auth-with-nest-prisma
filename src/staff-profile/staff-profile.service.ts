@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateStaffProfileDto } from './dto/create-staff-profile.dto';
 import { UpdateStaffProfileDto } from './dto/update-staff-profile.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -17,12 +17,16 @@ export class StaffProfileService {
   }
 
   async findOne(id: number) {
-    return await this.prisma.staffProfile.findUnique({ where: { id } });
+    const staffProfile = await this.prisma.staffProfile.findUnique({ where: { id } });
+
+    if (!staffProfile)
+      throw new BadRequestException(`Record Doest Not Exist With : ${id}`);
+    return staffProfile;
   }
 
   update(id: number, updateStaffProfileDto: UpdateStaffProfileDto) {
-      return this.prisma.staffProfile.update({
-        where:{id},
+    return this.prisma.staffProfile.update({
+      where: { id },
       data: updateStaffProfileDto,
     });
   }

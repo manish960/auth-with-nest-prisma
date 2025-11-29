@@ -40,7 +40,7 @@ model Patient {
   createdAt DateTime @default(now())
 
   // Relations
-  // appointments Appointment[]
+  appointments Appointment[]
   // invoices     Invoice[]
 }
 
@@ -56,7 +56,7 @@ model DoctorProfile {
 
   // Relations
   user User @relation(fields: [userId], references: [id])
-  // appointments Appointment[]
+  appointments Appointment[]
 }
 
 model StaffProfile {
@@ -68,4 +68,27 @@ model StaffProfile {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Appointment {
+  id           Int       @id @default(autoincrement())
+  patientId    Int
+  doctorId     Int
+  scheduledAt  DateTime
+  reason       String?
+  status       AppointmentStatus @default(PENDING)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  patient      Patient       @relation(fields: [patientId], references: [id])
+  doctor       DoctorProfile @relation(fields: [doctorId], references: [id])
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
 }
